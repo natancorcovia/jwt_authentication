@@ -47,8 +47,15 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-app.post("/protected", authenticateToken, (req, res) => {
+app.get("/protected", authenticateToken, (req, res) => {
   res.status(200).json({ message: "Bem vindo à rota autenticada!" });
+});
+
+app.get("/admin", authenticateToken, (req, res) => {
+  if (req.user.role !== "admin") {
+    res.status(403).json({ message: "Acesso negado!" });
+  }
+  res.status(200).json({ message: "Bem vindo à área administrativa!" });
 });
 
 app.listen(PORT, () => {
