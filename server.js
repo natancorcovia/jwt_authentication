@@ -31,6 +31,26 @@ app.post("/login", (req, res) => {
   }
 });
 
+const authenticateToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  if (!token) {
+    res.status(403).json({ message: "Token não fornecido!" });
+  }
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) {
+      res.status(403).json({ message: "Token inválido!" });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+app.post("/protected", authenticateToken, (req, res) => {
+  res.status(200).json({ message: "Bem vindo à rota autenticada!" });
+});
+
 app.listen(PORT, () => {
   console.log("Servidor online!");
 });
